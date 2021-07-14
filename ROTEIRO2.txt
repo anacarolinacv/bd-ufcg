@@ -1,0 +1,148 @@
+ROTEIRO 1 - BD UFCG 
+ALUNA: ANA CAROLINA CHAVES DE VASCONCELOS -- 118110388
+
+--------------------------------------------------------------
+
+###QUESTAO 1
+
+COMANDOS QUE NAO FUNCIONARAM:
+
+- INSERT INTO tarefas VALUES (2147483644, 'limpar chao do corredor superior', '98765432322211', 0, 'F');
+
+obs: aconteceu isso, porque na criacao da tabela coloquei para que o CPF tenha tamanho padronizado de 11 e essa tarefa tinha o valor do CPF do funcionario diferente disso.
+
+ERROR: value too long for type character varying(11)
+
+- INSERT INTO tarefas VALUES (2147483643, 'limpar chao do corredor superior', '98765432321', 0, 'FF');
+
+obs: isso aconteceu pq coloquei esse valor para ser padronizado como uma letra (tamanho 1), podendo ser F (para fazer) e T( ja foi feita) e como foi recebida uma string com tamanho 2 nao tinha como aceitar.
+obs: os exemplos de entrada que dei foram esses, mas como nao padronizou a entrada pode receber qualquer elemento de tamanho 1.
+
+ERROR: value too long for type character(1)
+
+--------------------------------------------------------------
+
+## QUESTAO 2
+
+- ALTER TABLE tarefas ALTER COLUMN id_tarefa TYPE BIGINT;
+obs: o erro aconteceu pq o tipo do dado foi definido com integer e a partir da tabela da documentacao do postgresql
+( https://www.postgresql.org/docs/9.5/datatype-numeric.html) o valor vai ate 2147483647 e ele recebeu 2147483648.
+
+obs: a partir da propria tabela do link, o proximo tipo de dado que supria minhas necessidades sera o BIGINT e alterei na tabela no campo relacionado.
+
+ERROR: integer out of range
+
+---------------------------------------------------------------
+
+## QUESTAO 3
+
+- ALTER TABLE tarefas ALTER COLUMN numerador TYPE SMALLINT;
+obs: para nao aceitar, teria que colocar um tipo em que os valores inseridos nao estivessem dentro do conjunto
+
+ERROR: smallint out of range
+
+## QUESTAO 4 (FEITA)
+
+---------------------------------------------------------------
+
+## QUESTAO 5
+
+obs: criando uma chave primaria impedira de criacao de tarefas com o mesmo id 
+obs: INSERT INTO tarefas VALUES(2147483653, 'aparar gramas da área frontal','32323232911',3, 'A'); nao foi inserido justamente por isso.
+
+---------------------------------------------------------------
+
+## QUESTAO 6
+
+6A
+
+obs: eu troquei o tipo de dado relacionado para CHAR(11) inves de colocar um CHECK relacionado, porque foi algo que me veio mais rapido na mente
+
+ALTER TABLE tarefas ADD CONSTRAINT checa_cpf CHECK(LENGTH(func_resp_cpf) = 11); (pesquisei dps de fazer e achei que isso resolveria)
+
+6B (MUDAR OS TIPOS DE STATUS ACEITAVEIS)
+
+obs: tive que atualizar os status das tarefas ja cadastradas.
+TESTADO (tentei inserir tarefas com status sem ser os definidos)
+
+---------------------------------------------------------------
+
+## QUESTAO 7
+
+obs: tive que atualizar as prioridades das tarefas ja cadastradas.
+comando: ALTER TABLE tarefas ADD CONSTRAINT check_prioridade CHECK(prioridade >= 0 AND prioridade <= 5);
+TESTADO
+
+TENTEI INSERIR: INSERT INTO tarefas values(561564898, 'trancar portas do 2o andar','14943274588', 50, 'N');
+
+---------------------------------------------------------------
+
+
+## QUESTAO 8
+
+
+INSERT INTO funcionario (cpf,data_nasc, nome, funcao, nivel, superior_cpf) VALUES('12345678913', '1980-04-09', 'joao da silva', 'LIMPEZA', 'J', null);
+obs: nao funcionou pq nao aceita superior_cpf nulo sendo de LIMPEZA.
+
+
+----------------------------------------------------------------
+
+## QUESTAO 9 
+
+inseridos
+
+INSERT INTO funcionario VALUES('07393368005', '1999-05-19', 'ANA CAROLINA', 'SUP_LIMPEZA', 'P', NULL);
+INSERT INTO funcionario VALUES('07393368010', '1999-05-19', 'CAROL HIHI', 'SUP_LIMPEZA', 'P', NULL);
+INSERT INTO funcionario VALUES('56221089080', '2005-03-21','LULU ETC', 'SUP_LIMPEZA', 'S', NULL);
+INSERT INTO funcionario VALUES('56221089090', '2005-03-21', 'TAINARA', 'SUP_LIMPEZA', 'S', NULL);
+INSERT INTO funcionario VALUES('25654948950', '1999-07-19', 'GABRIELA', 'LIMPEZA', 'J', '07393368005');
+INSERT INTO funcionario VALUES('25654948940', '1999-07-19', 'GABRI', 'LIMPEZA', 'J', '07393368005');
+INSERT INTO funcionario VALUES('25654948943', '1999-07-19', 'alice', 'LIMPEZA', 'J', '07393368005');
+INSERT INTO funcionario VALUES('25654948946', '1999-07-19', 'fernanda', 'LIMPEZA', 'J', '07393368005');
+INSERT INTO funcionario VALUES('25654948947', '1999-07-19', 'jennifer', 'LIMPEZA', 'J', '07393368005');
+INSERT INTO funcionario VALUES('25654948941', '1999-07-19', 'mateus', 'LIMPEZA', 'J', '07393368005');
+
+nao inseridos
+
+INSERT INTO funcionario VALUES('25654948941', '1999-07-19', 'mateus', 'LIMPEZA', 'J', '07393368005'); // ja inserido
+INSERT INTO funcionario VALUES('25654948911', '1999-07-19', 'karmem', 'LIMPEZA', 'J', null); // limpeza precisa de superior (check_sup)
+INSERT INTO funcionario VALUES('8232038201', '1998-06-05', 'helen', 'LIMPEZA', 'S','07232774001'); // tamanho cpf invalido
+INSERT INTO funcionario VALUES('91373526057', '1970-05-25', 'tereza', 'LIMPEZA', 'M', '07232774001'); // nivel invalido
+INSERT INTO funcionario VALUES('07232774031', null, 'Socorro Jesus', 'SUP_LIMPEZA', 'P', NULL); // atributo null
+INSERT INTO funcionario VALUES('82857914087', '1988-11-17', 'rossana', 'LIMPEZA', 'S', '23149951046'); // sup nao pode ter sup 
+INSERT INTO funcionario VALUES('82857910083', '1988-11-17', 'luis', 'LIMPEZA', 'A', '82857914083'); // nivel invalido
+INSERT INTO funcionario VALUES('82857910083', '1988-11-17', null , 'LIMPEZA', 'A', '82857914083'); // atributo null 
+INSERT INTO funcionario VALUES('82857910483', null, 'Pedro Silva', 'LIMPEZA', 'A', '82857914083'); // data de nascimento null
+INSERT INTO funcionario VALUES(null, '1995-09-30', 'finalmente acabou senhor', 'SUP_LIMPEZA', 'J', NULL); // cpf null
+
+----------------------------------------------------------------
+
+## QUESTAO 10
+
+DELETE FROM funcionario WHERE cpf = '25654948941';
+resposta:  Key (cpf)=(25654948941) is still referenced from table "funcionario".
+
+DELETE FROM funcionario WHERE cpf = '32323232911';
+resposta:  Key (cpf)=(32323232911) is still referenced from table "tarefas".
+
+
+----------------------------------------------------------------
+
+## QUESTAO 11
+
+ERROR:  new row for relation "tarefas" violates check constraint "func_idnull"
+DETAIL:  Failing row contains (126546547, trancar portas 3o andar, null, 0, E).
+CONTEXT:  SQL statement "UPDATE ONLY "public"."tarefas" SET "func_resp_cpf" = NULL WHERE $1 OPERATOR(pg_catalog.=) "func_resp_cpf""
+
+-----------------------------------------------------------------
+
+THE END 
+
+
+
+
+
+
+
+
+
