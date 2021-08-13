@@ -31,7 +31,7 @@ SELECT fname FROM employee WHERE sex='M' AND superssn IS NULL;
 
 --------------- Q9
 
-SELECT e.fname, s.fname FROM employee e, employee w WHERE e.superssn = s.ssn;
+SELECT e.fname, w.fname FROM employee e, employee w WHERE e.superssn = w.ssn;
 
 --------------- Q10
 
